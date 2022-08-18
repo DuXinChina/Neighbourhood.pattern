@@ -1,4 +1,3 @@
-b=read.csv("C:\\Users\\dell\\Desktop\\Ğ¡ÂÛÎÄ\\Á½Àà¹âÕÕÖ¸±êĞ¡ÂÛÎÄ\\Neipattern\\data1_2.csv")
 
 Tan.dependence.Wei_S.ISAA=function(minx,maxx,miny,maxy,b,indis,lag,tan,MI)
 {
@@ -15,7 +14,7 @@ Tan.dependence.Wei_S.mult=function(a,b,tan)
     
     Tan.dependence.S.single=function(a,b,tan)
     {
-      Neighbourhood.single1=function(a,b,tan)###ÕÒ³öÒ»¶¨³ß¶ÈÄÚµÄÁÚÌå         
+      Neighbourhood.single1=function(a,b,tan)###æ‰¾å‡ºä¸€å®šå°ºåº¦å†…çš„é‚»ä½“         
       {#3
         c=b[,1:2]
         for (i in 1:nrow(b))
@@ -55,7 +54,7 @@ Tan.dependence.Wei_S.mult=function(a,b,tan)
     
     Tan.dependence.Simpson=function(a,b,tan)
     {
-      Neighbourhood.single1=function(a,b,tan)###ÕÒ³öÒ»¶¨³ß¶ÈÄÚµÄÁÚÌå         
+      Neighbourhood.single1=function(a,b,tan)###æ‰¾å‡ºä¸€å®šå°ºåº¦å†…çš„é‚»ä½“         
       {#3
         c=b[,1:2]
         for (i in 1:nrow(b))
@@ -76,7 +75,7 @@ Tan.dependence.Wei_S.mult=function(a,b,tan)
       Nei.tree
       Simpn=sum(Nei.tree[,3])
       Nei.tree=subset(Nei.tree,Distance>0)
-      Nei.tree1=subset(Nei.tree,x>=a[,1]&y>a[,2])####½«Nei.tree»®·Öµ½ËÄ¸öÏóÏŞ
+      Nei.tree1=subset(Nei.tree,x>=a[,1]&y>a[,2])####å°†Nei.treeåˆ’åˆ†åˆ°å››ä¸ªè±¡é™
       Nei.tree2=subset(Nei.tree,x>a[,1]&y<=a[,2])
       Nei.tree3=subset(Nei.tree,x<=a[,1]&y<a[,2])
       Nei.tree4=subset(Nei.tree,x<a[,1]&y>=a[,2])
@@ -88,7 +87,7 @@ Tan.dependence.Wei_S.mult=function(a,b,tan)
       if(is.nan(simp_wei)==T)(simp_wei=0.25)
       simp_wei
     }
-    #####¼ÆËã³ß¶ÈÒÀÀµ¼ÓÈ¨Òñ±Î¶È
+    #####è®¡ç®—å°ºåº¦ä¾èµ–åŠ æƒè«è”½åº¦
     S=Tan.dependence.S.single(a,b,tan)
     Levins_Simpson=Tan.dependence.Simpson(a,b,tan)
     a=S$a
@@ -102,26 +101,26 @@ Tan.dependence.Wei_S.mult=function(a,b,tan)
   d=matrix(NA,nrow(a),3)
   pb=tkProgressBar("Progress","Percent complete %", 0, 100) 
   star_time=Sys.time()
-  ## ¼ÇÂ¼³ÌĞò¿ªÊ¼Ê±¼ä 
+  ## è®°å½•ç¨‹åºå¼€å§‹æ—¶é—´ 
   for(j in 1:nrow(a))
   {
     d[j,]=cbind(as.matrix(a[j,1:2]),as.matrix(Tan.dependence.Wei_S.single(a[j,],b,tan)$Tan_dependence_Wei_S))
     info=sprintf("Percent complete %d%%", round(j*100/nrow(a))) 
-    ## ÉèÖÃ½ø¶ÈÌõµÄÍê³É¶È
+    ## è®¾ç½®è¿›åº¦æ¡çš„å®Œæˆåº¦
     setTkProgressBar(pb, j*100/nrow(a), sprintf("Progress (%s)", info),info) 
-    ## ÉèÖÃ½ø¶ÈÌõ         
+    ## è®¾ç½®è¿›åº¦æ¡         
   }
   end_time =Sys.time()  
-  ## ¼ÇÂ¼³ÌĞò½áÊøÊ±¼ä
+  ## è®°å½•ç¨‹åºç»“æŸæ—¶é—´
   close(pb)  
   run_time = end_time - star_time 
-  ## ¼ÆËã³ÌĞòÔËĞĞÊ±¼ä
+  ## è®¡ç®—ç¨‹åºè¿è¡Œæ—¶é—´
   colnames(d)=c("x","y","Tan_dependence_Wei_S")
   rownames(d)=1:nrow(a)
   d=as.data.frame(d)
   d
 }
-#¼ÆËã¾ùÔÈ²¼µãµÄºÏÀí·Ö¸î·ÖÊı
+#è®¡ç®—å‡åŒ€å¸ƒç‚¹çš„åˆç†åˆ†å‰²åˆ†æ•°
 nx=(maxx-minx-indis)%/%lag
 ny=(maxy-miny-indis)%/%lag
 n=min(nx,ny)
@@ -130,7 +129,7 @@ n=min(nx,ny)
 I=matrix(NA,n,1)
 Z=matrix(NA,n,1)
 distance=matrix(NA,n,1)
-####Éú³É¾ùÔÈ²¼µã
+####ç”Ÿæˆå‡åŒ€å¸ƒç‚¹
 
 x=seq(minx,maxx,by=indis)
 y=seq(miny,maxy,by=indis)
