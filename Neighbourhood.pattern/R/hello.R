@@ -5509,7 +5509,7 @@ plot.Scale.dependence.Wei_S.Krig=function(minx,maxx,miny,maxy,b,seq,scale,MI)
   print(p2)
 }
 ####计算加权进界邻体荫蔽度的修正系数function~
-MI.Tan.S=function(minx,maxx,miny,maxy,b,seq,tan,MI)
+#MI.Tan.S=function(minx,maxx,miny,maxy,b,seq,tan,MI)
 {
   library(sp)
   library(gstat)
