@@ -3,14 +3,12 @@ MI.Tan.S=function(minx,maxx,miny,maxy,b,seq,tan,MI)
   library(sp)
   library(gstat)
   library(tcltk)
-  #################
-  ####生成插值点
   xgrid=seq(minx,maxx, length.out = seq+1)
   ygrid=seq(miny,maxy, length.out = seq+1)
   basexy=expand.grid(xgrid, ygrid)
   basexy[,3]=0
   colnames(basexy) <- c("x", "y","Size")
-  a= dplyr::distinct(basexy)####删除重复样点
+  a= dplyr::distinct(basexy)
   ################
   Tan.dependence.Wei_S.mult=function (a, b, tan, MI) 
   {
