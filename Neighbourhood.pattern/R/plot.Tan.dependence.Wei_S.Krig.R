@@ -19,7 +19,6 @@ plot.Tan.dependence.Wei_S.Krig=function (minx, maxx, miny, maxy, b, seq, tan, MI
           d = subset(d, tangent > tan )
           colnames(d) = c("x", "Y", "Size", 
                           "Distance", "tangent")
-          d = subset(d, Distance > 0 )
           d
         }
         Nei.tree = Neighbourhood.single1(a, b, tan)

@@ -15,7 +15,6 @@ Scale.dependence.Wei_S.mult=function (a, b, scale, MI)
         d = subset(d, d < scale)
         colnames(d) = c("x", "Y", "Size", 
                         "Distance")
-        d = subset(d, Distance > 0 )
         d
       }
       Nei.tree = Neighbourhood.single1(a, b, scale)

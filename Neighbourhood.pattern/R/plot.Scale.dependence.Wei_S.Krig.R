@@ -20,7 +20,6 @@ plot.Scale.dependence.Wei_S.Krig=function (minx, maxx, miny, maxy, b, seq, scale
           d = subset(d, d < scale)
           colnames(d) = c("x", "Y", "Size", 
                           "Distance")
-          d = subset(d, Distance > 0 )
           d
         }
         Nei.tree = Neighbourhood.single1(a, b, scale)
