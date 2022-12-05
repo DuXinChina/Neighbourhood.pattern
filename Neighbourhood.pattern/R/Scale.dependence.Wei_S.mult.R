@@ -103,7 +103,7 @@ Scale.dependence.Wei_S.mult=function (a, b, scale, MI)
     outcome
   }
   d = matrix(NA, nrow(a), 3)
-  pb = tkProgressBar("Progress", "Percent complete %", 
+  pb = tkProgressBar("", "Percent complete %", 
                      0, 100)
   star_time = Sys.time()
   for (j in 1:nrow(a)) {

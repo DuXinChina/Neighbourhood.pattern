@@ -108,15 +108,15 @@ plot.Scale.dependence.Wei_S.Krig=function (minx, maxx, miny, maxy, b, seq, scale
       outcome
     }
     d = matrix(NA, nrow(a), 3)
-    pb = tkProgressBar("进度", "已完成 %", 
+    pb = tkProgressBar("", "Percent complete %", 
                        0, 100)
     star_time = Sys.time()
     for (j in 1:nrow(a)) {
       d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Scale.dependence.Wei_S.single(a[j, 
       ], b, scale, MI)$Scale_dependence_Wei_S))
-      info = sprintf("已完成 %d%%", round(j * 
+      info = sprintf("Percent complete %d%%", round(j * 
                                          100/nrow(a)))
-      setTkProgressBar(pb, j * 100/nrow(a), sprintf("进度 (%s)", 
+      setTkProgressBar(pb, j * 100/nrow(a), sprintf("Progress (%s)", 
                                                     info), info)
     }
     end_time = Sys.time()
