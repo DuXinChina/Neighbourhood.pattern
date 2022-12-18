@@ -1,4 +1,4 @@
-Tan.dependence.Wei_S.mult=function(a, b, tan) {
+Tan.dependence.Wei_S.mult=function(a, b, tan,MI) {
   library(tcltk)
   Tan.dependence.Wei_S.single = function(a, b, tan) {
     Tan.dependence.S.single = function(a, b, tan) {
