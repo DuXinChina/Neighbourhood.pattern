@@ -1,4 +1,4 @@
-Scale.dependence.Wei_S.ISAA=function(minx,maxx,miny,maxy,boundary,b,indis,lag,scale,MI)
+Scale.dependence.Wei_S.ISAA=function(minx,maxx,miny,maxy,a,b,indis,lag,scale,MI)
 {
 library(ape)
 library(sp)
