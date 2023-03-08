@@ -1,8 +1,7 @@
-Scale.dependence.Wei_S.mult=function (a, b, scale, MI) 
+plot.Scale.dependence.Wei_S.single=function (a, b, scale, MI) 
 {
-  library(tcltk)
-  library(sp)
-  library(gstat)
+  library(ggplot2)
+  library(ggforce)
   Scale.dependence.Wei_S.single = function(a, b, scale, MI) {
     Scale.dependence.S.single = function(a, b, scale, MI) {
       Neighbourhood.single1 = function(a, b, scale) {
@@ -12,6 +11,7 @@ Scale.dependence.Wei_S.mult=function (a, b, scale, MI)
           d = (c[, 1] + c[, 2])^(1/2)
         }
         d = cbind(b, d)
+        d = subset(d, d > 0)
         d = subset(d, d < scale)
         colnames(d) = c("x", "Y", "Size", 
                         "Distance")
@@ -58,11 +58,9 @@ Scale.dependence.Wei_S.mult=function (a, b, scale, MI)
           d = (c[, 1] + c[, 2])^(1/2)
         }
         d = cbind(b, d)
-        d = subset(d, d > 0)
         d = subset(d, d < scale)
         colnames(d) = c("x", "y", "Size", 
                         "Distance")
-        d = subset(d, Distance > 0)
         d
       }
       Nei.tree = Neighbourhood.single1(a, b, scale)
@@ -87,7 +85,7 @@ Scale.dependence.Wei_S.mult=function (a, b, scale, MI)
       simp_wei = sum((Simpn1/Simpn)^2, (Simpn2/Simpn)^2, 
                      (Simpn3/Simpn)^2, (Simpn4/Simpn)^2)
       if (is.nan(simp_wei) == T) 
-        (simp_wei = 0.25)
+        (simp_wei = 1)
       simp_wei
     }
     S = Scale.dependence.S.single(a, b, scale, MI)
@@ -101,23 +99,42 @@ Scale.dependence.Wei_S.mult=function (a, b, scale, MI)
                    Scale_dependence_Wei_S = Scale_dependence_Wei_S)
     outcome
   }
-  d = matrix(NA, nrow(a), 3)
-  pb = tkProgressBar("", "Percent complete %", 
-                     0, 100)
-  star_time = Sys.time()
-  for (j in 1:nrow(a)) {
-    d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Scale.dependence.Wei_S.single(a[j, 
-    ], b, scale, MI)$Scale_dependence_Wei_S))
-    info = sprintf("Percent complete %d%%", round(j * 
-                                                    100/nrow(a)))
-    setTkProgressBar(pb, j * 100/nrow(a), sprintf("Progress (%s)", 
-                                                  info), info)
-  }
-  end_time = Sys.time()
-  close(pb)
-  run_time = end_time - star_time
-  colnames(d) = c("x", "y", "Scale_dependence_Wei_S")
-  rownames(d) = 1:nrow(a)
-  d = as.data.frame(d)
-  d
+  Ne = Scale.dependence.Wei_S.single(a, b, scale, MI)
+  big = subset(Ne$Neighbourhood, Size > a[, 3])
+  small = subset(Ne$Neighbourhood, Size <= a[, 3])
+  n = nrow(big)
+  center = cbind(cbind(rep(Ne$a[, 1], each = n), rep(Ne$a[, 
+                                                          2], each = n), rep(Ne$a[, 3], each = n)), c(1:n))
+  center = as.data.frame(center)
+  colnames(center) = c("x", "y", "size", 
+                       "group")
+  Neigh = cbind(big, c(1:n))
+  Neigh = Neigh[, c(1, 2, 3, 6)]
+  colnames(Neigh) = c("x", "y", "size", "group")
+  colnames(small) = c("x", "y", "size")
+  unitg = rbind(center, Neigh)
+  p = ggplot()
+  p = p + geom_hline(data = Ne$a, aes(yintercept = y), linetype = 5, 
+                     col = "red") + geom_vline(data = Ne$a, aes(xintercept = x), 
+                                               linetype = 5, col = "red")
+  p = p + geom_line(data = unitg, aes(x = x, y = y, group = group), 
+                    linetype = 2, size = 1) + geom_circle(data = Ne$a, aes(x0 = x, 
+                                                                           y0 = y, r = scale), linetype = 2, color = "black", 
+                                                          alpha = 1)
+  p = p + geom_point(data = Ne$a, aes(x, y), size = 13/max(unitg[, 
+                                                                 3]) * a[, 3] + 2, color = "red4", alpha = 0.7) + 
+    geom_point(data = Neigh, aes(x, y), size = 13/max(unitg[, 
+                                                            3]) * Neigh[, 3] + 2, color = "green4", alpha = 0.7)
+  p = p + geom_point(data = small, aes(x, y), size = 13/max(unitg[, 
+                                                                  3]) * small[, 3] + 2, color = "grey", alpha = 0.7)
+  p = p + geom_point(data = Ne$a, aes(x, y), size = 2) + geom_point(data = Neigh, 
+                                                                    aes(x, y), size = 2) + geom_point(data = small, aes(x, 
+                                                                                                                        y), size = 2)
+  p = p + lims(x = c(Ne$a[, 1] - 1.1 * scale, Ne$a[, 1] + 1.1 * 
+                       scale), y = c(Ne$a[, 2] - 1.1 * scale, Ne$a[, 2] + 1.1 * 
+                                       scale))
+  p = p + annotate("text", x = Ne$a[, 1] - scale + 0.5 * 
+                     (scale), y = Ne$a[, 2] + scale - 0.125 * (scale), label = paste0("Scale_dependence_Wei_S=", 
+                                                                                      round(Ne$Scale_dependence_Wei_S, 3)))
+  p + theme_bw()
 }

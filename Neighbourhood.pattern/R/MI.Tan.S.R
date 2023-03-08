@@ -1,22 +1,30 @@
-MI.Tan.S=function(minx,maxx,miny,maxy,b,seq,tan,MI)
+minx=5
+maxx=45
+miny=5
+maxy=45
+b=read.csv("C:\\Users\\dell\\Desktop\\小论文\\更新光环境的分型维数\\data\\plot4.csv")
+seq=20
+tan=3.18
+
+
+MI.Tan.S=function(minx, maxx, miny, maxy, b, seq, tan)
 {
   library(sp)
   library(gstat)
   library(tcltk)
-  xgrid=seq(minx,maxx, length.out = seq+1)
-  ygrid=seq(miny,maxy, length.out = seq+1)
-  basexy=expand.grid(xgrid, ygrid)
-  basexy[,3]=0
-  colnames(basexy) <- c("x", "y","Size")
-  a= dplyr::distinct(basexy)
-  ################
-  Tan.dependence.Wei_S.mult=function (a, b, tan, MI) 
-  {
+  xgrid = seq(minx, maxx, length.out = seq + 1)
+  ygrid = seq(miny, maxy, length.out = seq + 1)
+  basexy = expand.grid(xgrid, ygrid)
+  basexy[, 3] = 0
+  colnames(basexy) <- c("x", "y", "Size")
+  a = dplyr::distinct(basexy)
+  Tan.dependence.Wei_S.mult = function(a, b, tan, MI) {
     library(tcltk)
     library(sp)
     library(gstat)
     Tan.dependence.Wei_S.single = function(a, b, tan) {
       Tan.dependence.S.single = function(a, b, tan) {
+        ###找到a点的邻近个体
         Neighbourhood.single1 = function(a, b, tan) {
           c = b[, 1:2]
           for (i in 1:nrow(b)) {
@@ -31,6 +39,7 @@ MI.Tan.S=function(minx,maxx,miny,maxy,b,seq,tan,MI)
           d
         }
         Nei.tree = Neighbourhood.single1(a, b, tan)
+        #计算未经校正的进界邻体荫蔽度
         n.dif = nrow(Nei.tree)
         if (n.dif == 0) {
           Tan_dependence_S = 0
@@ -41,70 +50,32 @@ MI.Tan.S=function(minx,maxx,miny,maxy,b,seq,tan,MI)
           Neighbourhood1 = Neighbourhood
           Neighbourhood[which(Neighbourhood[, 5] <= 0), 
                         5] = NA
-          Neighbourhood1[which(Neighbourhood1[, 5] <= 0), 
-                         5] = 0
-          Neighbourhood1[which(Neighbourhood1[, 4] == 0), 
-                         4] = 1e-08
+          Neighbourhood1[which(Neighbourhood1[, 5] <= 
+                                 0), 5] = 0
+          Neighbourhood1[which(Neighbourhood1[, 4] == 
+                                 0), 4] = 1e-08
           S1 = Neighbourhood1[, 5]/Neighbourhood1[, 4]
           S2 = as.data.frame(S1)
-          S = sum(S2, na.rm = T)
+          S = sum(S2)
+          if (S==Inf) S= 1e+08
           Tan_dependence_S = S
         }
-        Tan_dependence_S = (atan(Tan_dependence_S/(MI * pi))/pi * 
-                              2)
+        
+        
         if (is.nan(Tan_dependence_S) == T) 
           (Tan_dependence_S = 1)
         outcome = list(a = a, Neighbourhood = Neighbourhood, 
                        Tan_dependence_S = Tan_dependence_S)
         outcome
       }
-      Tan.dependence.Simpson = function(a, b, tan) {
-        Neighbourhood.single1 = function(a, b, tan) {
-          c = b[, 1:2]
-          for (i in 1:nrow(b)) {
-            c[i, ] = (b[i, 1:2] - a[1, 1:2])^2
-            d = (c[, 1] + c[, 2])^(1/2)
-          }
-          d = cbind(b, d)
-          d$tangent = (d$size - a[, 3])/d$d
-          d = subset(d, tangent > tan)
-          colnames(d) = c("x", "y", "Size", 
-                          "Distance", "tangent")
-          d
-        }
-        Nei.tree = Neighbourhood.single1(a, b, tan)
-        Nei.tree[, 3] = Nei.tree[, 3] - a[, 3]
-        Nei.tree = subset(Nei.tree, Size > 0)
-        Nei.tree
-        Simpn = sum(Nei.tree[, 3])
-        Nei.tree = subset(Nei.tree, Distance > 0)
-        Nei.tree1 = subset(Nei.tree, x >= a[, 1] & y > a[, 
-                                                         2])
-        Nei.tree2 = subset(Nei.tree, x > a[, 1] & y <= a[, 
-                                                         2])
-        Nei.tree3 = subset(Nei.tree, x <= a[, 1] & y < a[, 
-                                                         2])
-        Nei.tree4 = subset(Nei.tree, x < a[, 1] & y >= a[, 
-                                                         2])
-        Simpn1 = sum(Nei.tree1[, 3])
-        Simpn2 = sum(Nei.tree2[, 3])
-        Simpn3 = sum(Nei.tree3[, 3])
-        Simpn4 = sum(Nei.tree4[, 3])
-        simp_wei = sum((Simpn1/Simpn)^2, (Simpn2/Simpn)^2, 
-                       (Simpn3/Simpn)^2, (Simpn4/Simpn)^2)
-        if (is.nan(simp_wei) == T) 
-          (simp_wei = 0.25)
-        simp_wei
-      }
+      
       S = Tan.dependence.S.single(a, b, tan)
-      Levins_Simpson = Tan.dependence.Simpson(a, b, tan)
       a = S$a
       Neighbourhood = S$Neighbourhood
       Tan_dependence_S = S$Tan_dependence_S
-      Tan_dependence_Wei_S = Tan_dependence_S * (0.25/Levins_Simpson)
+      
       outcome = list(a = a, Neighbourhood = Neighbourhood, 
-                     Tan_dependence_S = Tan_dependence_S, Levins_Simpson = Levins_Simpson, 
-                     Tan_dependence_Wei_S = Tan_dependence_Wei_S)
+                     Tan_dependence_S = Tan_dependence_S)
       outcome
     }
     d = matrix(NA, nrow(a), 3)
@@ -113,7 +84,7 @@ MI.Tan.S=function(minx,maxx,miny,maxy,b,seq,tan,MI)
     star_time = Sys.time()
     for (j in 1:nrow(a)) {
       d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Tan.dependence.Wei_S.single(a[j, 
-      ], b, tan)$Tan_dependence_Wei_S))
+      ], b, tan)$Tan_dependence_S))
       info = sprintf("Percent complete %d%%", round(j * 
                                                       100/nrow(a)))
       setTkProgressBar(pb, j * 100/nrow(a), sprintf("Progress (%s)", 
@@ -122,20 +93,25 @@ MI.Tan.S=function(minx,maxx,miny,maxy,b,seq,tan,MI)
     end_time = Sys.time()
     close(pb)
     run_time = end_time - star_time
-    colnames(d) = c("x", "y", "Tan_dependence_Wei_S")
+    colnames(d) = c("x", "y", "Tan_dependence_S")
     rownames(d) = 1:nrow(a)
     d = as.data.frame(d)
     d
   }
-  ########
-  data=Tan.dependence.Wei_S.mult(a,b,tan,MI)
-  data=subset(data,data[,3]>0 & data[,3]<=1 )
-  data=data[,3]
-  n_=length(data)
-  x=matrix()
-  data=data[order(data)]
-  for(i in 1:n_){x[i]=i/n_}
-  lm=lm(x~data)
-  print(plot(data,x)+abline(lm))
-  print(summary(lm))
+  #计算加权的未校正荫蔽度
+  data = Tan.dependence.Wei_S.mult(a, b, tan, MI)
+  Tan_dependence_S=data$Tan_dependence_S
+  Rank=rank(Tan_dependence_S)
+  Percentile_Rank_of_Tan_dependence_S=Rank/length(Rank)
+  
+  nls=nls(Percentile_Rank_of_Tan_dependence_S~(atan(Tan_dependence_S/(MI * pi))/pi * 2),start = list(MI = 1),
+          algorithm = "port")
+  res=summary(nls)
+  MI=res$parameters[1,1]
+  Revise_Tan_dependence_S = (atan(Tan_dependence_S/(MI * pi))/pi * 2)
+  plot(Revise_Tan_dependence_S,Percentile_Rank_of_Tan_dependence_S,main="Q-Q plot",xlim=c(0,1),ylim=c(0,1)) + abline(0,1,col="red4")
+  R_square=1-sum((Percentile_Rank_of_Tan_dependence_S-Revise_Tan_dependence_S)^2)/sum((Percentile_Rank_of_Tan_dependence_S-mean(Percentile_Rank_of_Tan_dependence_S))^2)
+  output=list(MI=MI,R_square=R_square)
+  output
 }
+MI.Tan.S(minx, maxx, miny, maxy, b, seq, tan)

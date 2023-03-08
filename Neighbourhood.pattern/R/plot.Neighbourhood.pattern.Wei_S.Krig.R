@@ -1,120 +1,135 @@
-plot.Tan.dependence.Wei_S.Krig=function (minx, maxx, miny, maxy, b, seq, tan, MI) 
+plot.Neighbourhood.pattern.Wei_S.Krig=function (minx, maxx, miny, maxy, b, seq, n)
 {
   library(sp)
   library(gstat)
   library(tcltk)
   library(ggplot2)
-  Tan.dependence.Wei_S.mult = function(a, b, tan) {
+  Neighbourhood.pattern.Wei_S.mult = function(a, b, n) {
     library(tcltk)
-    Tan.dependence.Wei_S.single = function(a, b, tan) {
-      Tan.dependence.S.single = function(a, b, tan) {
-        Neighbourhood.single1 = function(a, b, tan) {
+    Neighbourhood.pattern.Wei_S.single = function(a, b, n) {
+      Neighbourhood.pattern.S.single = function(a, b, n) {
+        Neighbourhood.single1 = function(a, b, n) {
           c = b[, 1:2]
           for (i in 1:nrow(b)) {
             c[i, ] = (b[i, 1:2] - a[1, 1:2])^2
             d = (c[, 1] + c[, 2])^(1/2)
           }
           d = cbind(b, d)
-          d$tangent = (d$size - a[, 3])/d$d
-          d = subset(d, tangent > tan)
+          d = d[order(d[, 4])[1:n], 1:4]
           colnames(d) = c("x", "Y", "Size", 
-                          "Distance", "tangent")
+                          "Distance")
           d
         }
-        Nei.tree = Neighbourhood.single1(a, b, tan)
-        n.dif = nrow(Nei.tree)
-        if (n.dif == 0) {
-          Tan_dependence_S = 0
-          Neighbourhood = Nei.tree
-        }
-        if (n.dif != 0) {
-          Neighbourhood = Nei.tree
-          Neighbourhood1 = Neighbourhood
-          Neighbourhood[which(Neighbourhood[, 5] <= 0), 
-                        5] = NA
-          Neighbourhood1[which(Neighbourhood1[, 5] <= 
-                                 0), 5] = 0
-          Neighbourhood1[which(Neighbourhood1[, 4] == 
-                                 0), 4] = 1e-08
-          S1 = Neighbourhood1[, 5]/Neighbourhood1[, 4]
-          S2 = as.data.frame(S1)
-          S = sum(S2, na.rm = T)
-          Tan_dependence_S = S
-        }
-        Tan_dependence_S = (atan(Tan_dependence_S/(MI * 
-                                                     pi))/pi * 2)
-        if (is.nan(Tan_dependence_S) == T) 
-          (Tan_dependence_S = 1)
+        Nei.tree = Neighbourhood.single1(a, b, n)
+        Nei.dif.high = cbind(Nei.tree, Nei.tree[, 3] - 
+                               a[, 3])
+        colnames(Nei.dif.high) = c("x", "Y", 
+                                   "Size", "Distance", "Size_dif ")
+        Neighbourhood = Nei.dif.high
+        Neighbourhood1 = Neighbourhood
+        Neighbourhood[which(Neighbourhood[, 5] <= 0), 
+                      5] = NA
+        Neighbourhood1[which(Neighbourhood1[, 5] <= 0), 
+                       5] = 0
+        Neighbourhood1[which(Neighbourhood1[, 4] == 0), 
+                       4] = 1e-08
+        S1 = Neighbourhood1[, 5]/Neighbourhood1[, 4]
+        S1 = S1/(S1 + 1)
+        S2 = as.data.frame(S1)
+        S = sum(S2, na.rm = T)
+        S = S/n
+        Neighbourhood_pattern_S = S
         outcome = list(a = a, Neighbourhood = Neighbourhood, 
-                       Tan_dependence_S = Tan_dependence_S)
+                       Neighbourhood_pattern_S = Neighbourhood_pattern_S)
         outcome
       }
-      Tan.dependence.Simpson = function(a, b, tan) {
-        Neighbourhood.single1 = function(a, b, tan) {
-          c = b[, 1:2]
+      Neighbourhood.pattern.W.single = function(a, b, n) {
+        Neighbourhood.single = function(a, b, n) {
+          c = b
           for (i in 1:nrow(b)) {
-            c[i, ] = (b[i, 1:2] - a[1, 1:2])^2
+            c[i, ] = (b[i, ] - a[1, ])^2
             d = (c[, 1] + c[, 2])^(1/2)
           }
           d = cbind(b, d)
-          d$tangent = (d$size - a[, 3])/d$d
-          d = subset(d, tangent > tan)
-          colnames(d) = c("x", "y", "Size", 
-                          "Distance", "tangent")
-          d = subset(d, Distance > 0)
+          d = d[order(d[, 3])[1:n], 1:3]
+          colnames(d) = c("x", "y", "Distance")
           d
         }
-        Nei.tree = Neighbourhood.single1(a, b, tan)
-        Nei.tree[, 3] = Nei.tree[, 3] - a[, 3]
-        Nei.tree = subset(Nei.tree, Size > 0)
-        Nei.tree
-        Simpn = sum(Nei.tree[, 3])
-        Nei.tree = subset(Nei.tree, Distance > 0)
-        Nei.tree1 = subset(Nei.tree, x >= a[, 1] & y > 
-                             a[, 2])
-        Nei.tree2 = subset(Nei.tree, x > a[, 1] & y <= 
-                             a[, 2])
-        Nei.tree3 = subset(Nei.tree, x <= a[, 1] & y < 
-                             a[, 2])
-        Nei.tree4 = subset(Nei.tree, x < a[, 1] & y >= 
-                             a[, 2])
-        Simpn1 = sum(Nei.tree1[, 3])
-        Simpn2 = sum(Nei.tree2[, 3])
-        Simpn3 = sum(Nei.tree3[, 3])
-        Simpn4 = sum(Nei.tree4[, 3])
-        simp_wei = sum((Simpn1/Simpn)^2, (Simpn2/Simpn)^2, 
-                       (Simpn3/Simpn)^2, (Simpn4/Simpn)^2)
-        if (is.nan(simp_wei) == T) 
-          (simp_wei = 0.25)
-        simp_wei
+        Neighbourhood = Neighbourhood.single(a, b, n)[, 
+                                                      1:2]
+        threshold = matrix(cos(2 * pi/(n + 1)), 1, 2 * 
+                             n)
+        slope = matrix(NA, n, 1)
+        e = matrix(NA, n, n)
+        rb = matrix(NA, n, n)
+        residual = matrix(NA, n, 1)
+        stand1 = (Neighbourhood.single(a, b, n)[, 1] - 
+                    a[1, 1])/Neighbourhood.single(a, b, n)[, 3]
+        stand1[stand1 == 0] = 1e-08
+        stand2 = (Neighbourhood.single(a, b, n)[, 2] - 
+                    a[1, 2])/Neighbourhood.single(a, b, n)[, 3]
+        standard = cbind(stand1, stand2)
+        for (i in 1:n) {
+          slope[i, ] = standard[i, 2]/standard[i, 1]
+          for (j in 1:n) {
+            residual[j, ] = slope[i, ] * standard[j, 
+                                                  1] - standard[j, 2]
+          }
+          e[, i] = residual
+          e[abs(e) < 1e-09] = 0
+        }
+        for (i in 3:(n + 2)) {
+          standard.e = cbind(standard, e)
+          pe = subset(standard.e, standard.e[, i] >= 
+                        0, c(1, 2, i))
+          pea = pe[, 1:2] %*% standard[(i - 2), ]
+          pea = pea[order(pea, decreasing = T)]
+          ne = subset(standard.e, standard.e[, i] < 0, 
+                      c(1, 2, i))
+          nea = ne[, 1:2] %*% standard[(i - 2), ]
+          nea = nea[order(nea)]
+          rbe = rbind(as.matrix(pea), as.matrix(nea))
+          rb[, (i - 2)] = rbe
+        }
+        rbn2 = c(rb[2, ], rb[n, ])
+        angle = rbn2 - threshold
+        ang = subset(matrix(angle), matrix(angle) > 0)
+        num = length(ang)
+        W = num/(2 * n)
+        outcome = list(a = a, Neighbourhood = Neighbourhood, 
+                       W = W)
+        outcome
       }
-      S = Tan.dependence.S.single(a, b, tan)
-      Levins_Simpson = Tan.dependence.Simpson(a, b, tan)
+      S = Neighbourhood.pattern.S.single(a, b, n)
+      W = Neighbourhood.pattern.W.single(a, b, n)
       a = S$a
       Neighbourhood = S$Neighbourhood
-      Tan_dependence_S = S$Tan_dependence_S
-      Tan_dependence_Wei_S = Tan_dependence_S * (0.25/Levins_Simpson)
+      Neighbourhood_pattern_S = S$Neighbourhood_pattern_S
+      Neighbourhood_pattern_S = S$Neighbourhood_pattern_S
+      Neighbourhood_pattern_Wei_S = Neighbourhood_pattern_S * 
+        (1/n)^(W$W)
+      W = W$W
       outcome = list(a = a, Neighbourhood = Neighbourhood, 
-                     Tan_dependence_S = Tan_dependence_S, Levins_Simpson = Levins_Simpson, 
-                     Tan_dependence_Wei_S = Tan_dependence_Wei_S)
+                     Neighbourhood_pattern_S = Neighbourhood_pattern_S, 
+                     W = W, Neighbourhood_pattern_Wei_S = Neighbourhood_pattern_Wei_S)
       outcome
     }
     d = matrix(NA, nrow(a), 3)
-    pb = tkProgressBar("", "Percent complete %", 
+    pb = tkProgressBar("进度", "已完成 %", 
                        0, 100)
     star_time = Sys.time()
     for (j in 1:nrow(a)) {
-      d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Tan.dependence.Wei_S.single(a[j, 
-      ], b, tan)$Tan_dependence_Wei_S))
-      info = sprintf("Percent complete %d%%", round(j * 
-                                                      100/nrow(a)))
-      setTkProgressBar(pb, j * 100/nrow(a), sprintf("Progress  (%s)", 
+      d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Neighbourhood.pattern.Wei_S.single(a[j, 
+      ], b, n)$Neighbourhood_pattern_Wei_S))
+      info = sprintf("已完成 %d%%", round(j * 
+                                         100/nrow(a)))
+      setTkProgressBar(pb, j * 100/nrow(a), sprintf("进度 (%s)", 
                                                     info), info)
     }
     end_time = Sys.time()
     close(pb)
     run_time = end_time - star_time
-    colnames(d) = c("x", "y", "Tan_dependence_Wei_S")
+    colnames(d) = c("x", "y", "Neighbourhood_pattern_Wei_S")
     rownames(d) = 1:nrow(a)
     d = as.data.frame(d)
     d
@@ -169,34 +184,24 @@ plot.Tan.dependence.Wei_S.Krig=function (minx, maxx, miny, maxy, b, seq, tan, MI
   basexy[, 3] = 0
   colnames(basexy) <- c("x", "y", "Size")
   basexy = dplyr::distinct(basexy)
-  data = Tan.dependence.Wei_S.mult(basexy, b, tan)
+  data = Neighbourhood.pattern.Wei_S.mult(basexy, b, n)
   data1 = data
   coordinates(data) <- c("x", "y")
-  spplot(data, "Tan_dependence_Wei_S")
-  vgm1 <- variogram(Tan_dependence_Wei_S ~ 1, data)
+  spplot(data, "Neighbourhood_pattern_Wei_S")
+  vgm1 <- variogram(Neighbourhood_pattern_Wei_S ~ 1, data)
   plot(vgm1, plot.numbers = TRUE)
   m <- fit.variogram(vgm1, vgm("Sph"))
   print(m)
-  sd = subset(vgm1$dist, vgm1$dist < m$range[2])
-  spre = m$psill[1] + (m$psill[2]) * ((3 * sd)/(2 * m$range[2]) - 
-                                        sd^3/(2 * (m$range[2])^3))
-  bd = subset(vgm1$dist, vgm1$dist > m$range[2])
-  bpre = rep((m$psill[1] + m$psill[2]), length(bd))
-  pre = rbind(as.matrix(spre), as.matrix(bpre))
-  Coefficient_of_Determination = 1 - sum((pre - vgm1$gamma)^2)/sum((vgm1$gamma - 
-                                                                      mean(vgm1$gamma))^2)
-  print(paste("Coefficient_of_Determination=", Coefficient_of_Determination))
   p1 = plot(vgm1, model = m)
   print(p1)
-  krige_res <- krige(Tan_dependence_Wei_S ~ 1, data, basexy1, 
-                     model = m)
+  krige_res <- krige(Neighbourhood_pattern_Wei_S ~ 1, data, 
+                     basexy1, model = m)
   z = krige_res$var1.pred
   Basexyz = cbind(Basexy1, z)
   colnames(Basexyz) = c("x", "y", "Vaule")
   p2 = ggplot() + geom_raster(data = Basexyz, aes(x = x, y = y, 
-                                                  fill = Vaule)) + theme_bw() + scale_fill_gradientn(limits = c(min(Basexyz$Vaule), 
-                                                                                                                1), colours = terrain.colors(10))
-  p2 = p2 + labs(title = "The Tan dependence Wei_S") + 
+                                                  fill = Vaule)) + theme_bw() + scale_fill_gradientn(colours = terrain.colors(10))
+  p2 = p2 + labs(title = "The neighbourhood pattern Wei_S") + 
     scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(expand = c(0, 
                                                                          0))
   print(p2)
