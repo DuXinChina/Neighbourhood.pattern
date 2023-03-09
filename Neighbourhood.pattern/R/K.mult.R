@@ -1,23 +1,23 @@
-K.mult=function (a, b) 
+K.mult=function (a, b)
 {
   library(tcltk)
   Neighbourhood.K.single = function(a, b) {
-    b1 = subset(b, x >= a[, 1] & y > a[, 2] & size > a[, 
+    b1 = subset(b, x >= a[, 1] & y > a[, 2] & size > a[,
                                                        3])
-    b2 = subset(b, x > a[, 1] & y <= a[, 2] & size > a[, 
+    b2 = subset(b, x > a[, 1] & y <= a[, 2] & size > a[,
                                                        3])
-    b3 = subset(b, x <= a[, 1] & y < a[, 2] & size > a[, 
+    b3 = subset(b, x <= a[, 1] & y < a[, 2] & size > a[,
                                                        3])
-    b4 = subset(b, x < a[, 1] & y >= a[, 2] & size > a[, 
+    b4 = subset(b, x < a[, 1] & y >= a[, 2] & size > a[,
                                                        3])
     Neighbourhood.K.single1 = function(a, b) {
-      b1 = subset(b, x >= a[, 1] & y > a[, 2] & size > 
+      b1 = subset(b, x >= a[, 1] & y > a[, 2] & size >
                     a[, 3])
-      b2 = subset(b, x > a[, 1] & y <= a[, 2] & size > 
+      b2 = subset(b, x > a[, 1] & y <= a[, 2] & size >
                     a[, 3])
-      b3 = subset(b, x <= a[, 1] & y < a[, 2] & size > 
+      b3 = subset(b, x <= a[, 1] & y < a[, 2] & size >
                     a[, 3])
-      b4 = subset(b, x < a[, 1] & y >= a[, 2] & size > 
+      b4 = subset(b, x < a[, 1] & y >= a[, 2] & size >
                     a[, 3])
       Neighbourhood.single = function(a, b) {
         c = b[, 1:2]
@@ -28,7 +28,7 @@ K.mult=function (a, b)
         d = cbind(b, d)
         d = subset(d, d > 0)
         d = d[order(d[, 4])[1], 1:4]
-        colnames(d) = c("x", "Y", "Size", 
+        colnames(d) = c("x", "Y", "Size",
                         "Distance")
         d
       }
@@ -36,11 +36,11 @@ K.mult=function (a, b)
       b2.Nei.tree = Neighbourhood.single(a, b2)
       b3.Nei.tree = Neighbourhood.single(a, b3)
       b4.Nei.tree = Neighbourhood.single(a, b4)
-      Nei.tree = rbind(b1.Nei.tree, b2.Nei.tree, b3.Nei.tree, 
+      Nei.tree = rbind(b1.Nei.tree, b2.Nei.tree, b3.Nei.tree,
                        b4.Nei.tree)
-      Nei.dif.high = cbind(Nei.tree, Nei.tree[, 3] - a[, 
+      Nei.dif.high = cbind(Nei.tree, Nei.tree[, 3] - a[,
                                                        3])
-      colnames(Nei.dif.high) = c("x", "Y", 
+      colnames(Nei.dif.high) = c("x", "Y",
                                  "Size", "Distance", "Size_dif ")
       Neighbourhood = Nei.dif.high
       k1 = Neighbourhood[, 4]/Neighbourhood[, 5]
@@ -48,11 +48,11 @@ K.mult=function (a, b)
       k2[, 1][is.infinite(k2[, 1])] = NA
       K = sum(k2, na.rm = T)
       key = 2
-      outcome = list(a = a, Neighbourhood = Neighbourhood, 
+      outcome = list(a = a, Neighbourhood = Neighbourhood,
                      K = K, key = key)
       outcome
     }
-    if (nrow(b1) != 0 & nrow(b2) != 0 & nrow(b3) != 0 & nrow(b4) != 
+    if (nrow(b1) != 0 & nrow(b2) != 0 & nrow(b3) != 0 & nrow(b4) !=
         0) {
       Neighbourhood.K.single1(a, b)
     }
@@ -64,21 +64,21 @@ K.mult=function (a, b)
     }
   }
   d = matrix(NA, nrow(a), 4)
-  pb <- tkProgressBar("½ø¶È", "ÒÑÍê³É %", 
+  pb <- tkProgressBar("è¿›åº¦", "å·²å®Œæˆ %",
                       0, 100)
   star_time <- Sys.time()
   for (j in 1:nrow(a)) {
     KEY = Neighbourhood.K.single(a[j, ], b)
     sw = KEY$key
     if (sw == 1) {
-      warning(paste("¼ì²éµÚ", c(j), "ÐÐ"))
+      warning(paste("æ£€æŸ¥ç¬¬", c(j), "è¡Œ"))
     }
     else {
-      d[j, ] = cbind(as.matrix(a[j, ]), as.matrix(Neighbourhood.K.single(a[j, 
+      d[j, ] = cbind(as.matrix(a[j, ]), as.matrix(Neighbourhood.K.single(a[j,
       ], b)$K))
     }
-    info <- sprintf("ÒÑÍê³É %d%%", round(j * 100/nrow(a)))
-    setTkProgressBar(pb, j * 100/nrow(a), sprintf("½ø¶È (%s)", 
+    info <- sprintf("å·²å®Œæˆ %d%%", round(j * 100/nrow(a)))
+    setTkProgressBar(pb, j * 100/nrow(a), sprintf("è¿›åº¦ (%s)",
                                                   info), info)
   }
   end_time <- Sys.time()
@@ -87,7 +87,7 @@ K.mult=function (a, b)
   colnames(d) = c("X", "Y", "Size", "K")
   rownames(d) = 1:nrow(a)
   if (is.na(sum(d)) == TRUE) {
-    print("ÇëÈ·±£ÒÔ²Î¿¼ÁÖÄ¾ÎªÖÐÐÄµÄËÄ¸öÏóÏÞÄÚ¾ùÓÐ¸ßÓÚÆäµÄÁ¢Ä¾")
+    print("è¯·ç¡®ä¿ä»¥å‚è€ƒæž—æœ¨ä¸ºä¸­å¿ƒçš„å››ä¸ªè±¡é™å†…å‡æœ‰é«˜äºŽå…¶çš„ç«‹æœ¨")
     d
   }
   else {

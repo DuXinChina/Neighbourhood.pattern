@@ -1,12 +1,4 @@
-minx=5
-maxx=45
-miny=5
-maxy=45
-b=read.csv("C:\\Users\\dell\\Desktop\\小论文\\更新光环境的分型维数\\data\\plot4.csv")
-seq=10
-scale=5
-a=data.frame(x=15,y=10,size=0)
-MI.Scale.S=function (minx, maxx, miny, maxy, b, seq, scale) 
+MI.Scale.S=function (minx, maxx, miny, maxy, b, seq, scale)
 {
 library(sp)
 library(gstat)
@@ -31,17 +23,17 @@ Scale.dependence.Wei_S.mult = function(a, b, scale) {
         }
         d = cbind(b, d)
         d = subset(d, d < scale)
-        colnames(d) = c("x", "Y", "Size", 
+        colnames(d) = c("x", "Y", "Size",
                         "Distance")
         d
       }
       Nei.tree = Neighbourhood.single1(a, b, scale)
       n = nrow(Nei.tree)
-      Nei.dif.high = cbind(Nei.tree, Nei.tree[, 3] - 
+      Nei.dif.high = cbind(Nei.tree, Nei.tree[, 3] -
                              a[, 3])
-      colnames(Nei.dif.high) = c("x", "Y", 
+      colnames(Nei.dif.high) = c("x", "Y",
                                  "Size", "Distance", "Size_dif ")
-      n.dif = subset(Nei.dif.high, Nei.dif.high$Size_dif > 
+      n.dif = subset(Nei.dif.high, Nei.dif.high$Size_dif >
                        0)
       n.dif = nrow(n.dif)
       if (n.dif == 0) {
@@ -51,9 +43,9 @@ Scale.dependence.Wei_S.mult = function(a, b, scale) {
       if (n.dif != 0) {
         Neighbourhood = Nei.dif.high
         Neighbourhood1 = Neighbourhood
-        Neighbourhood[which(Neighbourhood[, 5] <= 0), 
+        Neighbourhood[which(Neighbourhood[, 5] <= 0),
                       5] = NA
-        Neighbourhood1[which(Neighbourhood1[, 5] <= 
+        Neighbourhood1[which(Neighbourhood1[, 5] <=
                                0), 5] = 0
 
         S1 = Neighbourhood1[, 5]/Neighbourhood1[, 4]
@@ -62,30 +54,30 @@ Scale.dependence.Wei_S.mult = function(a, b, scale) {
         if (S==Inf) S= 1e+08
         Scale_dependence_S = S
       }
-    
-      outcome = list(a = a, Neighbourhood = Neighbourhood, 
+
+      outcome = list(a = a, Neighbourhood = Neighbourhood,
                      Scale_dependence_S = Scale_dependence_S)
       outcome
     }
- 
+
     S = Scale.dependence.S.single(a, b, scale)
     a = S$a
     Neighbourhood = S$Neighbourhood
     Scale_dependence_S = S$Scale_dependence_S
-    outcome = list(a = a, Neighbourhood = Neighbourhood, 
+    outcome = list(a = a, Neighbourhood = Neighbourhood,
                    Scale_dependence_S = Scale_dependence_S)
     outcome
   }
   d = matrix(NA, nrow(a), 3)
-  pb = tkProgressBar("Progress", "Percent complete %", 
+  pb = tkProgressBar("Progress", "Percent complete %",
                      0, 100)
   star_time = Sys.time()
   for (j in 1:nrow(a)) {
-    d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Scale.dependence.Wei_S.single(a[j, 
+    d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Scale.dependence.Wei_S.single(a[j,
     ], b, scale)$Scale_dependence_S))
-    info = sprintf("Percent complete %d%%", round(j * 
+    info = sprintf("Percent complete %d%%", round(j *
                                                     100/nrow(a)))
-    setTkProgressBar(pb, j * 100/nrow(a), sprintf("Progress (%s)", 
+    setTkProgressBar(pb, j * 100/nrow(a), sprintf("Progress (%s)",
                                                   info), info)
   }
   end_time = Sys.time()
@@ -111,4 +103,3 @@ R_square=1-sum((Percentile_Rank_of_Scale_dependence_S-Revise_Scale_dependence_S)
 output=list(MI=MI,R_square=R_square)
 output
 }
-MI.Scale.S(minx, maxx, miny, maxy, b, seq, scale)

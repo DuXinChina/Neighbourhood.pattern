@@ -1,11 +1,3 @@
-minx=5
-maxx=45
-miny=5
-maxy=45
-b=read.csv("C:\\Users\\dell\\Desktop\\小论文\\更新光环境的分型维数\\data\\plot4.csv")
-seq=20
-tan=3.18
-
 
 MI.Tan.S=function(minx, maxx, miny, maxy, b, seq, tan)
 {
@@ -24,7 +16,7 @@ MI.Tan.S=function(minx, maxx, miny, maxy, b, seq, tan)
     library(gstat)
     Tan.dependence.Wei_S.single = function(a, b, tan) {
       Tan.dependence.S.single = function(a, b, tan) {
-        ###找到a点的邻近个体
+        ###?业?a?????诮?????
         Neighbourhood.single1 = function(a, b, tan) {
           c = b[, 1:2]
           for (i in 1:nrow(b)) {
@@ -34,12 +26,12 @@ MI.Tan.S=function(minx, maxx, miny, maxy, b, seq, tan)
           d = cbind(b, d)
           d$tangent = (d$size - a[, 3])/d$d
           d = subset(d, tangent > tan)
-          colnames(d) = c("x", "Y", "Size", 
+          colnames(d) = c("x", "Y", "Size",
                           "Distance", "tangent")
           d
         }
         Nei.tree = Neighbourhood.single1(a, b, tan)
-        #计算未经校正的进界邻体荫蔽度
+        #????未??校???慕??????????味?
         n.dif = nrow(Nei.tree)
         if (n.dif == 0) {
           Tan_dependence_S = 0
@@ -48,11 +40,11 @@ MI.Tan.S=function(minx, maxx, miny, maxy, b, seq, tan)
         if (n.dif != 0) {
           Neighbourhood = Nei.tree
           Neighbourhood1 = Neighbourhood
-          Neighbourhood[which(Neighbourhood[, 5] <= 0), 
+          Neighbourhood[which(Neighbourhood[, 5] <= 0),
                         5] = NA
-          Neighbourhood1[which(Neighbourhood1[, 5] <= 
+          Neighbourhood1[which(Neighbourhood1[, 5] <=
                                  0), 5] = 0
-          Neighbourhood1[which(Neighbourhood1[, 4] == 
+          Neighbourhood1[which(Neighbourhood1[, 4] ==
                                  0), 4] = 1e-08
           S1 = Neighbourhood1[, 5]/Neighbourhood1[, 4]
           S2 = as.data.frame(S1)
@@ -60,34 +52,34 @@ MI.Tan.S=function(minx, maxx, miny, maxy, b, seq, tan)
           if (S==Inf) S= 1e+08
           Tan_dependence_S = S
         }
-        
-        
-        if (is.nan(Tan_dependence_S) == T) 
+
+
+        if (is.nan(Tan_dependence_S) == T)
           (Tan_dependence_S = 1)
-        outcome = list(a = a, Neighbourhood = Neighbourhood, 
+        outcome = list(a = a, Neighbourhood = Neighbourhood,
                        Tan_dependence_S = Tan_dependence_S)
         outcome
       }
-      
+
       S = Tan.dependence.S.single(a, b, tan)
       a = S$a
       Neighbourhood = S$Neighbourhood
       Tan_dependence_S = S$Tan_dependence_S
-      
-      outcome = list(a = a, Neighbourhood = Neighbourhood, 
+
+      outcome = list(a = a, Neighbourhood = Neighbourhood,
                      Tan_dependence_S = Tan_dependence_S)
       outcome
     }
     d = matrix(NA, nrow(a), 3)
-    pb = tkProgressBar("Progress", "Percent complete %", 
+    pb = tkProgressBar("Progress", "Percent complete %",
                        0, 100)
     star_time = Sys.time()
     for (j in 1:nrow(a)) {
-      d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Tan.dependence.Wei_S.single(a[j, 
+      d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Tan.dependence.Wei_S.single(a[j,
       ], b, tan)$Tan_dependence_S))
-      info = sprintf("Percent complete %d%%", round(j * 
+      info = sprintf("Percent complete %d%%", round(j *
                                                       100/nrow(a)))
-      setTkProgressBar(pb, j * 100/nrow(a), sprintf("Progress (%s)", 
+      setTkProgressBar(pb, j * 100/nrow(a), sprintf("Progress (%s)",
                                                     info), info)
     }
     end_time = Sys.time()
@@ -98,12 +90,12 @@ MI.Tan.S=function(minx, maxx, miny, maxy, b, seq, tan)
     d = as.data.frame(d)
     d
   }
-  #计算加权的未校正荫蔽度
+
   data = Tan.dependence.Wei_S.mult(a, b, tan, MI)
   Tan_dependence_S=data$Tan_dependence_S
   Rank=rank(Tan_dependence_S)
   Percentile_Rank_of_Tan_dependence_S=Rank/length(Rank)
-  
+
   nls=nls(Percentile_Rank_of_Tan_dependence_S~(atan(Tan_dependence_S/(MI * pi))/pi * 2),start = list(MI = 1),
           algorithm = "port")
   res=summary(nls)
@@ -114,4 +106,4 @@ MI.Tan.S=function(minx, maxx, miny, maxy, b, seq, tan)
   output=list(MI=MI,R_square=R_square)
   output
 }
-MI.Tan.S(minx, maxx, miny, maxy, b, seq, tan)
+
