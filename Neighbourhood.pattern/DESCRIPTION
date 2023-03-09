@@ -1,6 +1,6 @@
 Package: Neighbourhood.pattern
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Analysis of neighbourhood patterns of trees
 Version: 0.2.0
 Author: DuXin DongXue
 Maintainer: The package maintainer <1608898299@qq.com>
