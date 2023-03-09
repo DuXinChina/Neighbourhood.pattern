@@ -107,14 +107,14 @@ Neighbourhood.pattern.Wei_S.mult=function (a, b, n)
     outcome
   }
   d = matrix(NA, nrow(a), 3)
-  pb = tkProgressBar("½ø¶È", "ÒÑÍê³É %", 0, 
+  pb = tkProgressBar("è¿›åº¦", "å·²å®Œæˆ %", 0, 
                      100)
   star_time = Sys.time()
   for (j in 1:nrow(a)) {
     d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Neighbourhood.pattern.Wei_S.single(a[j, 
     ], b, n)$Neighbourhood_pattern_Wei_S))
-    info = sprintf("ÒÑÍê³É %d%%", round(j * 100/nrow(a)))
-    setTkProgressBar(pb, j * 100/nrow(a), sprintf("½ø¶È (%s)", 
+    info = sprintf("å·²å®Œæˆ %d%%", round(j * 100/nrow(a)))
+    setTkProgressBar(pb, j * 100/nrow(a), sprintf("è¿›åº¦ (%s)", 
                                                   info), info)
   }
   end_time = Sys.time()
