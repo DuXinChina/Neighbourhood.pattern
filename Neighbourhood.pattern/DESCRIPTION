@@ -1,10 +1,10 @@
 Package: Neighbourhood.pattern
 Type: Package
-Title: What the Package Does (Analysis of neighbourhood patterns of trees.)
+Title: What the Package Does (Analysis of neighbourhood patterns of trees)
 Version: 0.2.0
 Author: DuXin DongXue
 Maintainer: 1608898299@qq.com
-Description: Analysis of neighbourhood patterns of trees..
+Description: Analysis of neighbourhood patterns of trees
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
