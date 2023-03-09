@@ -90,6 +90,6 @@ plot.K.single=function (a, b)
     p + theme_bw()
   }
   else {
-    warning("请确保以参考林木为中心的四个象限内均有高于其的立木")
+    warning("纭繚浠ュ弬鑰冩灄鏈ㄤ负涓績鐨勫洓涓薄闄愬唴鍧囨湁楂樹簬鍏剁殑绔嬫湪")
   }
 }
