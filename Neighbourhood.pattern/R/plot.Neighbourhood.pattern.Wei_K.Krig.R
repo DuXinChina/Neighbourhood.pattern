@@ -114,15 +114,15 @@ plot.Neighbourhood.pattern.Wei_K.Krig=function (minx, maxx, miny, maxy, b, seq, 
       outcome
     }
     d = matrix(NA, nrow(a), 3)
-    pb = tkProgressBar("½ø¶È", "ÒÑÍê³É %", 
+    pb = tkProgressBar("è¿›åº¦", "å·²å®Œæˆ %", 
                        0, 100)
     star_time = Sys.time()
     for (j in 1:nrow(a)) {
       d[j, ] = cbind(as.matrix(a[j, 1:2]), as.matrix(Neighbourhood.pattern.Wei_K.single(a[j, 
       ], b, n)$Neighbourhood_pattern_Wei_K))
-      info = sprintf("ÒÑÍê³É %d%%", round(j * 
+      info = sprintf("å·²å®Œæˆ %d%%", round(j * 
                                          100/nrow(a)))
-      setTkProgressBar(pb, j * 100/nrow(a), sprintf("½ø¶È (%s)", 
+      setTkProgressBar(pb, j * 100/nrow(a), sprintf("è¿›åº¦ (%s)", 
                                                     info), info)
     }
     end_time = Sys.time()
