@@ -29,15 +29,15 @@ plot.Neighbourhood.pattern.U.mult=function (a, b, n)
       outcome
     }
     d = matrix(NA, nrow(a), 4)
-    pb = tkProgressBar("½ø¶È", "ÒÑÍê³É %", 
+    pb = tkProgressBar("è¿›åº¦", "å·²å®Œæˆ %", 
                        0, 100)
     star_time = Sys.time()
     for (j in 1:nrow(a)) {
       d[j, ] = cbind(as.matrix(a[j, ]), as.matrix(Neighbourhood.pattern.U.single(a[j, 
       ], b, n)$U))
-      info = sprintf("ÒÑÍê³É %d%%", round(j * 
+      info = sprintf("å·²å®Œæˆ %d%%", round(j * 
                                          100/nrow(a)))
-      setTkProgressBar(pb, j * 100/nrow(a), sprintf("½ø¶È (%s)", 
+      setTkProgressBar(pb, j * 100/nrow(a), sprintf("è¿›åº¦ (%s)", 
                                                     info), info)
     }
     end_time = Sys.time()
