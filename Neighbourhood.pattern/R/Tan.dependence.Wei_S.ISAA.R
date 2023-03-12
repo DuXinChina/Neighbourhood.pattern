@@ -1,4 +1,5 @@
-Tan.dependence.Wei_S.ISAA=function (minx, maxx, miny, maxy, b, indis, lag, tan, MI) 
+
+Tan.dependence.Wei_S.ISAA=function (minx, maxx, miny, maxy, b, seq, indis, lag, tan, MI) 
 {
   library(ape)
   library(sp)
@@ -119,24 +120,28 @@ Tan.dependence.Wei_S.ISAA=function (minx, maxx, miny, maxy, b, indis, lag, tan, 
     d = as.data.frame(d)
     d
   }
+
   nx = (maxx - minx - indis)%/%lag
   ny = (maxy - miny - indis)%/%lag
   n = min(nx, ny)
   I = matrix(NA, n, 1)
   Z = matrix(NA, n, 1)
   distance = matrix(NA, n, 1)
-  x = seq(minx, maxx, by = indis)
-  y = seq(miny, maxy, by = indis)
+  x = seq(minx, maxx, length= seq+1)
+  y = seq(miny, maxy, length= seq+1)
   xy = expand.grid(x, y)
   xy$size = 0
   colnames(xy) = c("x", "y", "size")
   vaule = Tan.dependence.Wei_S.mult(xy, b, tan)
+  vaule = vaule[complete.cases(vaule), ]
+  vaule = vaule[, c(1, 2, 3)]
+  colnames(vaule) = c("x", "y", "Tan_dependence_Wei_S")
+  vaule = as.data.frame(vaule)
   for (i in 1:n) {
     vaule.dists = as.matrix(dist(cbind(vaule$x, vaule$y)))
-    vaule.dists = (vaule.dists - indis)%/%(i * lag) * i * 
-      lag + 0.5 * (i * lag + indis)
+    vaule.dists = (vaule.dists - indis)%/%(i * lag) * i * lag + 0.5 * (i * lag + indis)
+    vaule.dists[vaule.dists<=0]=0.5 * (i * lag + indis)
     vaule.dists.inv = 1/vaule.dists
-    diag(vaule.dists.inv) = 0
     Moran = Moran.I(vaule$Tan_dependence_Wei_S, vaule.dists.inv)
     I[i] = Moran$observed
     Z[i] = (Moran$observed - Moran$expected)/Moran$sd
@@ -144,6 +149,17 @@ Tan.dependence.Wei_S.ISAA=function (minx, maxx, miny, maxy, b, indis, lag, tan, 
     ISAA = cbind(distance, I, Z)
     colnames(ISAA) = c("lag", "Moran_I", "Z_Score")
   }
+  vaule.dists = as.matrix(dist(cbind(vaule$x, vaule$y)))
+  vaule.dists [vaule.dists <indis]=0.5*indis
+  vaule.dists.inv = 1/vaule.dists
+  Moran = Moran.I(vaule$Tan_dependence_Wei_S, vaule.dists.inv)
+  I = Moran$observed
+  Z = (Moran$observed - Moran$expected)/Moran$sd
+  distance =indis
+  ISAA_1 = cbind(distance, I, Z)
+  colnames(ISAA_1) = c("lag", "Moran_I", "Z_Score")
+  ISAA=rbind(ISAA_1,ISAA)
+  
   yBL = max(ISAA[, 3])/max(ISAA[, 2])
   yBL = 1.1 * yBL
   ISAA = as.data.frame(ISAA)
@@ -156,25 +172,32 @@ Tan.dependence.Wei_S.ISAA=function (minx, maxx, miny, maxy, b, indis, lag, tan, 
   ISAAZ$Moran_I = ISAAZ$Moran_I/yBL
   ISAAIZ = rbind(ISAAI, ISAAZ)
   Z = ISAA[, 3]
+  Z_positive=subset(Z,Z>0)
   Zbef = matrix(NA, length(ISAA[, 3]) - 2, 1)
   Zbac = matrix(NA, length(ISAA[, 3]) - 2, 1)
+  
   for (i in 1:(length(Z) - 2)) {
     Zbef[i] = Z[i + 1] - Z[i]
     Zbac[i] = Z[i + 2] - Z[i + 1]
   }
+  n=length(vaule$Tan_dependence_Wei_S) 
   ZBB = cbind(Zbef, Zbac)
   ZBB = cbind(ISAA$lag[-c(1, length(Z))], ZBB)
   ZBB = ZBB[which(ZBB[, 2] > 0 & ZBB[, 3] < 0), 1]
-  p = ggplot(ISAAIZ, aes(x = Lag)) + geom_line(aes(y = Moran_I, 
-                                                   group = Index)) + geom_point(aes(y = Moran_I, shape = Index), 
-                                                                                size = 2)
-  p = p + scale_y_continuous(sec.axis = sec_axis(~. * yBL, 
-                                                 name = "Z_Score")) + theme_bw()
-  p = p + geom_hline(aes(yintercept = 1.96/yBL), linetype = 5, 
-                     col = "black") + geom_hline(aes(yintercept = -1.96/yBL), 
-                                                 linetype = 5, col = "black") + geom_hline(aes(yintercept = 0/yBL), 
-                                                                                           linetype = 1) + geom_vline(xintercept = ZBB, linetype = 5, 
-                                                                                                                      col = "red") + theme(legend.title = element_blank(), 
-                                                                                                                                           legend.position = c(0.8, 0.8))
+  Z_positive=cbind(ISAA$lag[-c(1, length(Z))], Z[-c(1, length(Z))])
+  ZBB_positive=intersect(ZBB, Z_positive[which(Z_positive[,2]>0),1])
+  p = ggplot(ISAAIZ, aes(x = Lag)) + 
+    geom_hline(aes(yintercept = 1.96/yBL), linetype = 5, col = "black",size=1) + 
+    geom_hline(aes(yintercept = -1.96/yBL), linetype = 5, col = "black",size=1) + 
+    geom_hline(aes(yintercept = (-1/(n-1))), linetype = 2,col = "blue",size=1) + 
+    geom_vline(xintercept = ZBB_positive, linetype = 5, col = "red",size=1) + 
+    geom_hline(aes(yintercept = 0), linetype = 1,col = "gray",size=1)+
+    geom_line(aes(y = Moran_I, group = Index)) +
+    geom_point(aes(y = Moran_I, shape = Index), size = 2)
+  p = p + scale_y_continuous(sec.axis = sec_axis(~. * yBL, name = "Z_Score")) +
+    theme_bw()
+  p = p +
+    theme(legend.title = element_blank(), legend.position = c(0.8, 0.8))
   p
 }
+ 
