@@ -46,7 +46,7 @@ MI.Tan.S=function(minx, maxx, miny, maxy, b, seq, tan)
                                  0), 5] = 0
           Neighbourhood1[which(Neighbourhood1[, 4] ==
                                  0), 4] = 1e-08
-          S1 = Neighbourhood1[, 5]/Neighbourhood1[, 4]
+          S1 = Neighbourhood1[, 5]
           S2 = as.data.frame(S1)
           S = sum(S2)
           if (S==Inf) S= 1e+08
