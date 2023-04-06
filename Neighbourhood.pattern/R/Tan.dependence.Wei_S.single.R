@@ -26,8 +26,7 @@ Tan.dependence.Wei_S.single=function (a, b, tan, MI)
       Neighbourhood1 = Neighbourhood
       Neighbourhood[which(Neighbourhood[, 5] <= 0), 5] = NA
       Neighbourhood1[which(Neighbourhood1[, 5] <= 0), 5] = 0
-      Neighbourhood1[which(Neighbourhood1[, 4] == 0), 4] = 1e-08
-      S1 = Neighbourhood1[, 5]/Neighbourhood1[, 4]
+      S1 = Neighbourhood1[, 5]
       S2 = as.data.frame(S1)
       S = sum(S2, na.rm = T)
       Tan_dependence_S = S
