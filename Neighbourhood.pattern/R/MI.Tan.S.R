@@ -101,7 +101,7 @@ MI.Tan.S=function(minx, maxx, miny, maxy, b, seq, tan)
   res=summary(nls)
   MI=res$parameters[1,1]
   Revise_Tan_dependence_S = (atan(Tan_dependence_S/(MI * pi))/pi * 2)
-  Revise_Tan_dependence_S=(Revise_Tan_dependence_S-min(Revise_Tan_dependence_S))/(max(Revise_Tan_dependence_S)-min(Revise_Tan_dependence_S))
+ 
   plot(Revise_Tan_dependence_S,Percentile_Rank_of_Tan_dependence_S,main="Q-Q plot",xlim=c(0,1),ylim=c(0,1)) + abline(0,1,col="red4")
   R_square=1-sum((Percentile_Rank_of_Tan_dependence_S-Revise_Tan_dependence_S)^2)/sum((Percentile_Rank_of_Tan_dependence_S-mean(Percentile_Rank_of_Tan_dependence_S))^2)
   output=list(MI=MI,R_square=R_square)
