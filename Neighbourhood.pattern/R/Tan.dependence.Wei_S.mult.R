@@ -87,6 +87,7 @@ Tan.dependence.Wei_S.mult=function (a, b, tan, MI)
     Neighbourhood = S$Neighbourhood
     Tan_dependence_S = S$Tan_dependence_S
     Tan_dependence_Wei_S = Tan_dependence_S * (0.25/Levins_Simpson)
+    Tan_dependence_Wei_S=(Tan_dependence_Wei_S-min(Tan_dependence_Wei_S))/(max(Tan_dependence_Wei_S)-min(Tan_dependence_Wei_S))
     outcome = list(a = a, Neighbourhood = Neighbourhood, 
                    Tan_dependence_S = Tan_dependence_S, Levins_Simpson = Levins_Simpson, 
                    Tan_dependence_Wei_S = Tan_dependence_Wei_S)
