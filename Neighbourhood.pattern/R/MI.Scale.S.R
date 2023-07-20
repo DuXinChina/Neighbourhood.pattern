@@ -98,7 +98,7 @@ nls=nls(Percentile_Rank_of_Scale_dependence_S~(atan(Scale_dependence_S/(MI * pi)
 res=summary(nls)
 MI=res$parameters[1,1]
 Revise_Scale_dependence_S = (atan(Scale_dependence_S/(MI * pi))/pi * 2)
-plot(Percentile_Rank_of_Scale_dependence_S,Revise_Scale_dependence_S,main="Q-Q plot",xlim=c(0,1),ylim=c(0,1)) + abline(0,1,col="red4")
+plot(Revise_Scale_dependence_S,Percentile_Rank_of_Scale_dependence_S,main="Q-Q plot",xlim=c(0,1),ylim=c(0,1)) + abline(0,1,col="red4")
 R_square=1-sum((Percentile_Rank_of_Scale_dependence_S-Revise_Scale_dependence_S)^2)/sum((Percentile_Rank_of_Scale_dependence_S-mean(Percentile_Rank_of_Scale_dependence_S))^2)
 output=list(MI=MI,R_square=R_square)
 output
