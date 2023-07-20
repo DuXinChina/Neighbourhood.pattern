@@ -117,7 +117,7 @@ nls=nls(Percentile_Rank_of_K~(atan(K/(MI * pi))/pi * 2),start = list(MI = 0),
 res=summary(nls)
 MI=res$parameters[1,1]
 Revise_K = (atan(K/(MI * pi))/pi * 2)
-plot(Revise_K,Percentile_Rank_of_K,main="Q-Q plot",xlim=c(0,1),ylim=c(0,1)) + abline(0,1,col="red4")
+plot(Percentile_Rank_of_K,Revise_K,main="Q-Q plot",xlim=c(0,1),ylim=c(0,1)) + abline(0,1,col="red4")
 R_square=1-sum((Percentile_Rank_of_K-Revise_K)^2)/sum((Percentile_Rank_of_K-mean(Percentile_Rank_of_K))^2)
 output=list(MI=MI,R_square=R_square)
 output
