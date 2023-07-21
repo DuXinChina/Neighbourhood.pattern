@@ -1,4 +1,4 @@
-a=data.frame(x=50,y=50,size=0)
+
 Tan.dependence.Beam_S.single=function (a, b, tan, mi, MI) 
 {
   
@@ -47,4 +47,4 @@ Tan.dependence.Beam_S.single=function (a, b, tan, mi, MI)
     outcome
   }
 
-Tan.dependence.Beam_S.single(a[1,], b, tan=3, mi=0.8, MI=5) 
+
